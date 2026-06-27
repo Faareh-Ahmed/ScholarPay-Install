@@ -26,6 +26,11 @@ export default {
       return new Response('Method not allowed', { status: 405 })
     }
 
+    const url = new URL(request.url)
+    if (url.pathname !== '/download') {
+      return new Response('Not Found', { status: 404 })
+    }
+
     const cf = request.cf || {}
     const now = new Date()
 

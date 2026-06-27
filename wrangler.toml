@@ -1,0 +1,24 @@
+name = "scholarpay-download"
+main = "worker/index.js"
+compatibility_date = "2025-06-01"
+
+# Serve the static HTML page from the 'page' directory
+[assets]
+directory = "page"
+
+# ──────────────────────────────────────────────
+# KV Namespace Binding
+# ──────────────────────────────────────────────
+[[kv_namespaces]]
+binding = "APP_DOWNLOADS"
+id = "96e563ca353048718b43a829196bcd6a"
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
