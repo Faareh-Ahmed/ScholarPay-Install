@@ -74,7 +74,14 @@ export default {
       await writeLog()
     }
 
-    // ── Redirect to APK ──────────────────────
-    return Response.redirect(CONFIG.APK_URL, 302)
+    // ── Force Direct Download Instead of Standard Redirect ──────────────────────
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': CONFIG.APK_URL,
+        'Content-Type': 'application/vnd.android.package-archive',
+        'Content-Disposition': 'attachment; filename="scholarpay.apk"'
+      }
+    });
   },
 }
