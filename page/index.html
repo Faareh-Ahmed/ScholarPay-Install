@@ -593,14 +593,21 @@
       if (!btn) continue
       btn.addEventListener('click', function (e) {
         e.preventDefault()
-        const originalText = this.textContent
-        this.textContent = 'Starting download...'
+        const originalHTML = this.innerHTML
+        this.innerHTML = 'Starting download...'
         this.style.opacity = '0.7'
         this.style.pointerEvents = 'none'
 
-        setTimeout(function () {
+        setTimeout(() => {
           window.location.href = WORKER_URL
         }, 400)
+
+        // Revert button state after 3 seconds
+        setTimeout(() => {
+          this.innerHTML = originalHTML
+          this.style.opacity = '1'
+          this.style.pointerEvents = 'auto'
+        }, 3000)
       })
     }
   </script>
