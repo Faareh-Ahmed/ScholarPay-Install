@@ -25,7 +25,6 @@ This repository contains the source code for the **ScholarPay Landing Page** and
 
 ## 📂 Repository Structure
 
-- `page/`: The static landing page (built with HTML, Tailwind CSS) deployed via Cloudflare Pages.
-- `worker/`: The Cloudflare Worker script that acts as a secure download tracker, logging metrics into Cloudflare KV before redirecting users to the APK download.
+- `page/`: The unified Cloudflare deployment root containing the static landing page (`index.html`) and the download tracker script (`tracker.js`).
 
 
