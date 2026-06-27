@@ -1,4 +1,4 @@
-name = "scholarpay-download-tracker"
+name = "scholarpay-download"
 main = "index.js"
 compatibility_date = "2025-06-01"
 
@@ -10,7 +10,7 @@ compatibility_date = "2025-06-01"
 # ──────────────────────────────────────────────
 [[kv_namespaces]]
 binding = "APP_DOWNLOADS"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+id = "96e563ca353048718b43a829196bcd6a"
 
 # ──────────────────────────────────────────────
 # Routes
