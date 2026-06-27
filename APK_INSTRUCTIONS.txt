@@ -1,0 +1,17 @@
+══════════════════════════════════════════════
+  HOW TO UPDATE THE APK FILE
+══════════════════════════════════════════════
+
+1. Build the new APK from the main app project:
+     cd /home/julie/ScholarPay/ScholarPayApp
+     eas build --local --platform android --profile preview
+
+2. Copy the generated APK into this folder:
+     cp /path/to/scholarpay-v1.0.2.apk /home/julie/ScholarPay/ScholarPayShare/page/
+
+3. Rename it to something predictable (e.g. scholarpay.apk):
+     mv scholarpay-v1.0.2.apk scholarpay.apk
+
+4. Update the APK_URL in worker/index.js to point to the new file.
+
+5. Update the version number in page/index.html.

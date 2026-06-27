@@ -1,0 +1,21 @@
+name = "scholarpay-download-tracker"
+main = "index.js"
+compatibility_date = "2025-06-01"
+
+# ──────────────────────────────────────────────
+# KV Namespace Binding
+# Create this namespace in the Cloudflare Dashboard:
+#   Workers & Pages → KV → Create namespace → "APP_DOWNLOADS"
+# Then copy the ID below.
+# ──────────────────────────────────────────────
+[[kv_namespaces]]
+binding = "APP_DOWNLOADS"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+# ──────────────────────────────────────────────
+# Routes
+# Uncomment and configure if you want a custom domain
+# ──────────────────────────────────────────────
+# routes = [
+#   { pattern = "download.scholarpay.app", custom_domain = true }
+# ]

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>ScholarPay - Smart Budgets, Smart Travel</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+    href="https://lh3.googleusercontent.com/aida/AP1WRLu0i4xhsSqrSBRtk7Qr4tpqJzbwDf3SyDqsOJnEvwhbn0pphdgqisTuVRmkdGjfOFhHASwBerCDL24s1YRfBHNHk_jNGBZc2IjiS6L3LB4UPsO0sXjy9lWPclQTxmEwfGvAChZFzs5mDO7sHWfhDE0U7QnlHKKHd8D6njxpCW6cc0kY3rgrNfUdqwbGPfEafpBSa9h0cGsGqGLTWhgFrDDvSUhGzTAcnpW80jNT3Uktjsm275dsizmcdg" />
+  <!-- Google Fonts: Manrope -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+          },
+          colors: {
+            emerald: {
+              500: '#10B981',
+            },
+            slate: {
+              900: '#10293B',
+              950: '#0B1C30',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style data-purpose="custom-animations">
+    /* ── Cursor-reactive gradient background ── */
+    #gradient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -10;
+      background: #060f0a;
+      overflow: hidden;
+    }
+
+    /* Primary orb — follows cursor */
+    #gradient-bg .orb-cursor {
+      position: absolute;
+      width: 900px;
+      height: 900px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center,
+          rgba(16, 185, 129, 0.22) 0%,
+          rgba(16, 185, 129, 0.08) 35%,
+          transparent 70%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      will-change: left, top;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    /* Secondary orb — slow ambient drift */
+    #gradient-bg .orb-ambient {
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center,
+          rgba(6, 78, 59, 0.30) 0%,
+          rgba(4, 47, 35, 0.12) 45%,
+          transparent 70%);
+      pointer-events: none;
+      animation: ambientDrift 18s ease-in-out infinite alternate;
+    }
+
+    /* Dark vignette to keep edges deep */
+    #gradient-bg .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center,
+          transparent 40%,
+          rgba(4, 10, 7, 0.75) 100%);
+    }
+
+    @keyframes ambientDrift {
+      0% {
+        left: -10%;
+        top: 60%;
+      }
+
+      33% {
+        left: 55%;
+        top: 10%;
+      }
+
+      66% {
+        left: 85%;
+        top: 70%;
+      }
+
+      100% {
+        left: 15%;
+        top: 80%;
+      }
+    }
+
+    /* ── Hero floating preview ── */
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-18px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    .floating-mockup {
+      animation: float 7s ease-in-out infinite;
+    }
+
+    /* ── Glassmorphism cards ── */
+    .glass-card {
+      background: rgba(8, 24, 18, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(16, 185, 129, 0.10);
+    }
+
+    /* ── Linear Marquee ── */
+    .marquee-wrapper {
+      position: relative;
+      padding-block: 2rem;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+    }
+
+    .marquee-container {
+      display: flex;
+      overflow: hidden;
+      user-select: none;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+    }
+
+    .marquee-content {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-around;
+      min-width: 100%;
+      gap: 1.5rem;
+    }
+
+    .marquee-ltr {
+      animation: scroll-ltr 35s linear infinite;
+    }
+
+    .marquee-rtl {
+      animation: scroll-rtl 35s linear infinite;
+    }
+
+    @keyframes scroll-ltr {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes scroll-rtl {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    .flag-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: rgba(8, 22, 16, 0.70);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(16, 185, 129, 0.18);
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.82);
+      white-space: nowrap;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+      transition: border-color 0.3s;
+    }
+
+    .flag-pill:hover {
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    .flag-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .flag-code {
+      font-size: 11px;
+      color: rgba(16, 185, 129, 0.85);
+      letter-spacing: 0.06em;
+      font-weight: 800;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-white font-sans selection:bg-emerald-500/30">
+  <!-- BEGIN: AnimatedBackground -->
+  <div id="gradient-bg" data-purpose="background-shader">
+    <div class="orb-ambient"></div>
+    <div class="orb-cursor" id="orb-cursor"></div>
+    <div class="vignette"></div>
+  </div>
+  <!-- END: AnimatedBackground -->
+  <!-- BEGIN: MainHeader -->
+  <header class="fixed top-0 left-0 right-0 z-50 py-6" data-purpose="navigation">
+    <nav class="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img alt="ScholarPay Logo" class="h-10 w-10 object-contain"
+          src="https://lh3.googleusercontent.com/aida/AP1WRLu0i4xhsSqrSBRtk7Qr4tpqJzbwDf3SyDqsOJnEvwhbn0pphdgqisTuVRmkdGjfOFhHASwBerCDL24s1YRfBHNHk_jNGBZc2IjiS6L3LB4UPsO0sXjy9lWPclQTxmEwfGvAChZFzs5mDO7sHWfhDE0U7QnlHKKHd8D6njxpCW6cc0kY3rgrNfUdqwbGPfEafpBSa9h0cGsGqGLTWhgFrDDvSUhGzTAcnpW80jNT3Uktjsm275dsizmcdg" />
+        <span class="text-xl font-extrabold tracking-tight">ScholarPay</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8">
+        <a class="text-sm font-semibold text-slate-300 hover:text-emerald-500 transition-colors"
+          href="#features">Features</a>
+        <a class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 px-6 py-2.5 rounded-full font-bold text-sm transition-all transform flex items-center gap-2 hover:scale-105"
+          href="#" id="downloadBtnHeader">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M17.6,9.48l1.84-3.18c0.16-0.31,0.04-0.69-0.26-0.85c-0.29-0.15-0.65-0.06-0.83,0.22l-1.88,3.24 c-2.86-1.21-6.08-1.21-8.94,0L5.65,5.67c-0.19-0.29-0.58-0.38-0.87-0.2c-0.28,0.18-0.37,0.54-0.22,0.83L6.4,9.48 C2.81,11.48,0.47,15.22,0,19.5h24C23.53,15.22,21.19,11.48,17.6,9.48z M7,15.25c-0.69,0-1.25-0.56-1.25-1.25 c0-0.69,0.56-1.25,1.25-1.25s1.25,0.56,1.25,1.25C8.25,14.69,7.69,15.25,7,15.25z M17,15.25c-0.69,0-1.25-0.56-1.25-1.25 c0-0.69,0.56-1.25,1.25-1.25s1.25,0.56,1.25,1.25C18.25,14.69,17.69,15.25,17,15.25z" />
+          </svg>
+          Android APK
+        </a>
+      </div>
+    </nav>
+  </header>
+  <!-- END: MainHeader -->
+  <main>
+    <!-- BEGIN: HeroSection -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden" data-purpose="hero-area">
+      <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+        <!-- Content -->
+        <div class="z-10">
+          <div
+            class="inline-block px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-sm font-bold mb-6">
+            LIVE MULTI-CURRENCY SUPPORT
+          </div>
+          <h1 class="text-5xl lg:text-7xl font-extrabold leading-[1.1] mb-8">
+            Smart Budgets, <br />
+            <span class="text-emerald-500">Smart Travel</span>
+          </h1>
+          <p class="text-lg lg:text-xl text-slate-400 mb-10 max-w-xl leading-relaxed">
+            The ultimate financial companion for international students. Track your scholarship funds, manage expenses
+            by category, and stay on budget — all in your preferred currency.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <button id="downloadBtnHero"
+              class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-3">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M17.6,9.48l1.84-3.18c0.16-0.31,0.04-0.69-0.26-0.85c-0.29-0.15-0.65-0.06-0.83,0.22l-1.88,3.24 c-2.86-1.21-6.08-1.21-8.94,0L5.65,5.67c-0.19-0.29-0.58-0.38-0.87-0.2c-0.28,0.18-0.37,0.54-0.22,0.83L6.4,9.48 C2.81,11.48,0.47,15.22,0,19.5h24C23.53,15.22,21.19,11.48,17.6,9.48z M7,15.25c-0.69,0-1.25-0.56-1.25-1.25 c0-0.69,0.56-1.25,1.25-1.25s1.25,0.56,1.25,1.25C8.25,14.69,7.69,15.25,7,15.25z M17,15.25c-0.69,0-1.25-0.56-1.25-1.25 c0-0.69,0.56-1.25,1.25-1.25s1.25,0.56,1.25,1.25C18.25,14.69,17.69,15.25,17,15.25z" />
+              </svg>
+              Download for Android
+            </button>
+          </div>
+        </div>
+        <!-- Mockup Visual -->
+        <div class="relative flex justify-center lg:justify-end">
+          <div class="relative w-full max-w-[540px] lg:max-w-[620px] floating-mockup">
+            <!-- Layered glow halos -->
+            <div class="absolute inset-0 -z-10"
+              style="background: radial-gradient(ellipse at 50% 55%, rgba(16,185,129,0.28) 0%, transparent 68%); filter: blur(32px);">
+            </div>
+            <div class="absolute inset-0 -z-10"
+              style="background: radial-gradient(ellipse at 50% 55%, rgba(16,185,129,0.10) 0%, transparent 80%); filter: blur(60px); transform: scale(1.2);">
+            </div>
+            <!-- Preview image -->
+            <img alt="ScholarPay App Preview — three screens showing dashboard, budgets and analytics"
+              class="w-full h-auto drop-shadow-2xl" src="../assets/preview.png"
+              style="filter: drop-shadow(0 24px 64px rgba(16,185,129,0.20));" />
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: HeroSection -->
+    <!-- BEGIN: LinearMarquee -->
+    <section class="marquee-wrapper" data-purpose="currency-flags-marquee">
+      <p class="text-center text-xs font-bold tracking-[0.22em] uppercase pointer-events-none mb-8 mt-2"
+        style="color:rgba(16,185,129,0.45);">Multi-Currency · 170+ Currencies Supported Worldwide</p>
+
+      <!-- Row 1: Left to Right -->
+      <div class="marquee-container">
+        <div class="marquee-content marquee-ltr">
+          <div class="flag-pill"><span class="flag-icon">🇺🇸</span><span class="flag-code">USD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇬🇧</span><span class="flag-code">GBP</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇪🇺</span><span class="flag-code">EUR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇨🇦</span><span class="flag-code">CAD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇯🇵</span><span class="flag-code">JPY</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇦🇺</span><span class="flag-code">AUD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇨🇭</span><span class="flag-code">CHF</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇸🇬</span><span class="flag-code">SGD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇮🇳</span><span class="flag-code">INR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇦🇪</span><span class="flag-code">AED</span></div>
+        </div>
+        <!-- Duplicate for seamless looping -->
+        <div class="marquee-content marquee-ltr">
+          <div class="flag-pill"><span class="flag-icon">🇺🇸</span><span class="flag-code">USD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇬🇧</span><span class="flag-code">GBP</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇪🇺</span><span class="flag-code">EUR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇨🇦</span><span class="flag-code">CAD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇯🇵</span><span class="flag-code">JPY</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇦🇺</span><span class="flag-code">AUD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇨🇭</span><span class="flag-code">CHF</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇸🇬</span><span class="flag-code">SGD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇮🇳</span><span class="flag-code">INR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇦🇪</span><span class="flag-code">AED</span></div>
+        </div>
+      </div>
+
+      <!-- Row 2: Right to Left -->
+      <div class="marquee-container">
+        <div class="marquee-content marquee-rtl">
+          <div class="flag-pill"><span class="flag-icon">🇧🇷</span><span class="flag-code">BRL</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇰🇷</span><span class="flag-code">KRW</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇸🇦</span><span class="flag-code">SAR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇲🇽</span><span class="flag-code">MXN</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇵🇰</span><span class="flag-code">PKR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇳🇴</span><span class="flag-code">NOK</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇹🇷</span><span class="flag-code">TRY</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇳🇿</span><span class="flag-code">NZD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇿🇦</span><span class="flag-code">ZAR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇸🇪</span><span class="flag-code">SEK</span></div>
+        </div>
+        <!-- Duplicate for seamless looping -->
+        <div class="marquee-content marquee-rtl">
+          <div class="flag-pill"><span class="flag-icon">🇧🇷</span><span class="flag-code">BRL</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇰🇷</span><span class="flag-code">KRW</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇸🇦</span><span class="flag-code">SAR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇲🇽</span><span class="flag-code">MXN</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇵🇰</span><span class="flag-code">PKR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇳🇴</span><span class="flag-code">NOK</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇹🇷</span><span class="flag-code">TRY</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇳🇿</span><span class="flag-code">NZD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇿🇦</span><span class="flag-code">ZAR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇸🇪</span><span class="flag-code">SEK</span></div>
+        </div>
+      </div>
+
+      <!-- Row 3: Left to Right -->
+      <div class="marquee-container mb-0">
+        <div class="marquee-content marquee-ltr">
+          <div class="flag-pill"><span class="flag-icon">🇭🇰</span><span class="flag-code">HKD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇮🇩</span><span class="flag-code">IDR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇲🇾</span><span class="flag-code">MYR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇵🇭</span><span class="flag-code">PHP</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇹🇭</span><span class="flag-code">THB</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇻🇳</span><span class="flag-code">VND</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇨🇱</span><span class="flag-code">CLP</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇨🇴</span><span class="flag-code">COP</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇵🇪</span><span class="flag-code">PEN</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇪🇬</span><span class="flag-code">EGP</span></div>
+        </div>
+        <!-- Duplicate for seamless looping -->
+        <div class="marquee-content marquee-ltr">
+          <div class="flag-pill"><span class="flag-icon">🇭🇰</span><span class="flag-code">HKD</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇮🇩</span><span class="flag-code">IDR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇲🇾</span><span class="flag-code">MYR</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇵🇭</span><span class="flag-code">PHP</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇹🇭</span><span class="flag-code">THB</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇻🇳</span><span class="flag-code">VND</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇨🇱</span><span class="flag-code">CLP</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇨🇴</span><span class="flag-code">COP</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇵🇪</span><span class="flag-code">PEN</span></div>
+          <div class="flag-pill"><span class="flag-icon">🇪🇬</span><span class="flag-code">EGP</span></div>
+        </div>
+      </div>
+
+    </section>
+    <!-- END: LinearMarquee -->
+    <!-- BEGIN: FeatureCards -->
+    <section class="py-24 relative" data-purpose="key-features" id="features">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl lg:text-5xl font-bold mb-4">Financial Freedom Abroad</h2>
+          <p class="text-slate-400 max-w-2xl mx-auto">Everything you need to manage your funds and living
+            expenses in one intuitive interface.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+
+          <!-- Multi-Currency Support Card -->
+          <div class="glass-card p-8 rounded-3xl hover:border-emerald-500/50 transition-all group">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 text-emerald-500">
+              <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold mb-4 group-hover:text-emerald-500 transition-colors">Multi-Currency Support
+            </h3>
+            <p class="text-slate-400 leading-relaxed">
+              View your balances in any currency with live exchange rates. Switch currencies instantly and your entire
+              budget updates automatically.
+            </p>
+          </div>
+
+          <!-- Scholarship & Funds Tracking Card -->
+          <div class="glass-card p-8 rounded-3xl hover:border-emerald-500/50 transition-all group">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 text-emerald-500">
+              <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold mb-4 group-hover:text-emerald-500 transition-colors">Scholarship &amp; Funds
+              Tracking</h3>
+            <p class="text-slate-400 leading-relaxed">
+              Log your scholarship disbursements as income and watch your remaining balance update in real time as you
+              spend.
+            </p>
+          </div>
+
+          <!-- Budget Categories Card -->
+          <div class="glass-card p-8 rounded-3xl hover:border-emerald-500/50 transition-all group">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 text-emerald-500">
+              <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold mb-4 group-hover:text-emerald-500 transition-colors">Budget Categories</h3>
+            <p class="text-slate-400 leading-relaxed">
+              Organise spending into custom categories like Rent, Groceries, or Transport — each with its own allocated
+              budget and progress bar.
+            </p>
+          </div>
+
+          <!-- Smart Budget Alerts Card -->
+          <div class="glass-card p-8 rounded-3xl hover:border-emerald-500/50 transition-all group">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 text-emerald-500">
+              <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold mb-4 group-hover:text-emerald-500 transition-colors">Smart Budget Alerts</h3>
+            <p class="text-slate-400 leading-relaxed">
+              Set custom spending-limit thresholds per category. Get notified when you're nearing the limit or have gone
+              over budget.
+            </p>
+          </div>
+
+          <!-- Packing Checklist Card -->
+          <div class="glass-card p-8 rounded-3xl hover:border-emerald-500/50 transition-all group">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 text-emerald-500">
+              <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold mb-4 group-hover:text-emerald-500 transition-colors">Packing Checklist</h3>
+            <p class="text-slate-400 leading-relaxed">
+              A built-in travel essentials list with a departure countdown. Curate your own packing bucket, add custom
+              items, and track what's packed.
+            </p>
+          </div>
+
+          <!-- PDF Report Export Card -->
+          <div class="glass-card p-8 rounded-3xl hover:border-emerald-500/50 transition-all group" id="how-it-works">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 text-emerald-500">
+              <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold mb-4 group-hover:text-emerald-500 transition-colors">Spending Insights &amp;
+              PDF Export</h3>
+            <p class="text-slate-400 leading-relaxed">
+              Instantly see your top spending categories and notable expenses. Export a full PDF report of your
+              transaction history to share or save.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+    <!-- END: FeatureCards -->
+    <!-- BEGIN: FinalCTA -->
+    <section class="py-24" data-purpose="cta-section">
+      <div class="max-w-5xl mx-auto px-6">
+        <div class="bg-emerald-500 rounded-[3rem] p-12 lg:p-20 text-center relative overflow-hidden">
+          <!-- Abstract Pattern Background -->
+          <div class="absolute inset-0 opacity-10 pointer-events-none">
+            <svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+              <path d="M0 100 C 20 0 50 0 100 100 Z" fill="white"></path>
+            </svg>
+          </div>
+          <div class="relative z-10">
+            <h2 class="text-4xl lg:text-6xl font-extrabold text-slate-950 mb-8">Manage your student <br /> finances with
+              ease</h2>
+            <p class="text-slate-900/70 text-lg lg:text-xl font-semibold mb-12 max-w-2xl mx-auto">
+              Start your journey today and take full control of your student finances across any border.
+            </p>
+            <button id="downloadBtnCta"
+              class="bg-slate-950 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:scale-105 transition-transform shadow-xl flex items-center justify-center gap-3 mx-auto">
+              <svg class="w-7 h-7 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M17.6,9.48l1.84-3.18c0.16-0.31,0.04-0.69-0.26-0.85c-0.29-0.15-0.65-0.06-0.83,0.22l-1.88,3.24 c-2.86-1.21-6.08-1.21-8.94,0L5.65,5.67c-0.19-0.29-0.58-0.38-0.87-0.2c-0.28,0.18-0.37,0.54-0.22,0.83L6.4,9.48 C2.81,11.48,0.47,15.22,0,19.5h24C23.53,15.22,21.19,11.48,17.6,9.48z M7,15.25c-0.69,0-1.25-0.56-1.25-1.25 c0-0.69,0.56-1.25,1.25-1.25s1.25,0.56,1.25,1.25C8.25,14.69,7.69,15.25,7,15.25z M17,15.25c-0.69,0-1.25-0.56-1.25-1.25 c0-0.69,0.56-1.25,1.25-1.25s1.25,0.56,1.25,1.25C18.25,14.69,17.69,15.25,17,15.25z" />
+              </svg>
+              Download for Android
+            </button>
+            <p class="mt-6 text-slate-900/50 text-sm font-medium italic">Available for Android 8.0+</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: FinalCTA -->
+  </main>
+  <!-- BEGIN: MainFooter -->
+  <footer class="border-t border-slate-900 py-12" data-purpose="footer">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+      <div class="flex items-center gap-3">
+        <img alt="ScholarPay Logo" class="h-8 w-8"
+          src="https://lh3.googleusercontent.com/aida/AP1WRLu0i4xhsSqrSBRtk7Qr4tpqJzbwDf3SyDqsOJnEvwhbn0pphdgqisTuVRmkdGjfOFhHASwBerCDL24s1YRfBHNHk_jNGBZc2IjiS6L3LB4UPsO0sXjy9lWPclQTxmEwfGvAChZFzs5mDO7sHWfhDE0U7QnlHKKHd8D6njxpCW6cc0kY3rgrNfUdqwbGPfEafpBSa9h0cGsGqGLTWhgFrDDvSUhGzTAcnpW80jNT3Uktjsm275dsizmcdg" />
+        <span class="text-lg font-bold">ScholarPay</span>
+      </div>
+      <div class="text-slate-500 text-sm">
+        &copy; 2026 ScholarPay. Built for the global student community.
+      </div>
+      <div class="flex gap-6">
+        <a href="https://www.linkedin.com/in/faareh-ahmed/" target="_blank" rel="noopener noreferrer"
+          class="text-slate-400 hover:text-emerald-500 transition-colors" aria-label="LinkedIn">
+          <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill-rule="evenodd"
+              d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+              clip-rule="evenodd" />
+          </svg>
+        </a>
+        <a href="https://github.com/Faareh-Ahmed" target="_blank" rel="noopener noreferrer"
+          class="text-slate-400 hover:text-emerald-500 transition-colors" aria-label="GitHub">
+          <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill-rule="evenodd"
+              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+              clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+  <!-- END: MainFooter -->
+
+  <!-- ── Download Tracker Script ─────────────────────────────────── -->
+  <script>
+    const WORKER_URL = 'https://scholarpay-download-tracker.your-subdomain.workers.dev'
+
+    const buttons = [
+      document.getElementById('downloadBtnHeader'),
+      document.getElementById('downloadBtnHero'),
+      document.getElementById('downloadBtnCta'),
+    ]
+
+    for (const btn of buttons) {
+      if (!btn) continue
+      btn.addEventListener('click', function (e) {
+        e.preventDefault()
+        const originalText = this.textContent
+        this.textContent = 'Starting download...'
+        this.style.opacity = '0.7'
+        this.style.pointerEvents = 'none'
+
+        setTimeout(function () {
+          window.location.href = WORKER_URL
+        }, 400)
+      })
+    }
+  </script>
+  <!-- ── End Download Tracker ───────────────────────────────────── -->
+
+  <!-- BEGIN: CursorGradientLogic -->
+  <script data-purpose="cursor-gradient-logic">
+    (function () {
+      const orb = document.getElementById('orb-cursor');
+      if (!orb) return;
+
+      // Current rendered position (lerped)
+      let rx = window.innerWidth / 2;
+      let ry = window.innerHeight / 2;
+
+      // Target position (raw mouse)
+      let tx = rx;
+      let ty = ry;
+
+      // Lerp factor — lower = smoother/lazier, higher = snappier
+      const LERP = 0.055;
+
+      // Track mouse
+      let orbVisible = false;
+      document.addEventListener('mousemove', function (e) {
+        if (!orbVisible) {
+          orb.style.opacity = '1';
+          orbVisible = true;
+        }
+        tx = e.clientX;
+        ty = e.clientY;
+      });
+
+      // Track touch (mobile)
+      document.addEventListener('touchmove', function (e) {
+        if (e.touches.length > 0) {
+          if (!orbVisible) {
+            orb.style.opacity = '1';
+            orbVisible = true;
+          }
+          tx = e.touches[0].clientX;
+          ty = e.touches[0].clientY;
+        }
+      }, { passive: true });
+
+      function lerp(a, b, t) { return a + (b - a) * t; }
+
+      function tick() {
+        rx = lerp(rx, tx, LERP);
+        ry = lerp(ry, ty, LERP);
+
+        // Position the orb so its centre is at the cursor
+        orb.style.left = rx + 'px';
+        orb.style.top = ry + 'px';
+
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    })();
+  </script>
+  <!-- END: CursorGradientLogic -->
+</body>
+
+</html>
