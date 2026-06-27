@@ -2,12 +2,19 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "scholarpay-download",
   "compatibility_date": "2026-06-27",
+  "main": "tracker.js",
   "observability": {
     "enabled": true
   },
   "assets": {
     "directory": "."
   },
+  "kv_namespaces": [
+    {
+      "binding": "APP_DOWNLOADS",
+      "id": "96e563ca353048718b43a829196bcd6a"
+    }
+  ],
   "compatibility_flags": [
     "nodejs_compat"
   ]
