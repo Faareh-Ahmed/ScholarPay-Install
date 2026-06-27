@@ -12,7 +12,7 @@
 // ──────────────────────────────────────────────
 const CONFIG = {
   // Public URL of the APK file (hosted on Cloudflare Pages or R2)
-  APK_URL: 'https://scholarpay-download.pages.dev/scholarpay-v1.apk',
+  APK_URL: 'https://github.com/Faareh-Ahmed/ScholarPay-Install/releases/download/v1.0.0/scholarpay.apk',
 
   // App metadata for logging
   APP_NAME: 'ScholarPay',
